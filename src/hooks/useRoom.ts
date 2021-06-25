@@ -19,6 +19,7 @@ type firebaseQuestions = Record<string, {
     nome: string;
     avatar: string;
   }
+  endedAt: Date;
   content: string;
   isAnswered: boolean;
   isHighlighted: boolean;
@@ -26,6 +27,7 @@ type firebaseQuestions = Record<string, {
     authorId: string
   }>
 }>
+
 export function useRoom(roomId: string) {
   const { user } = useAuth();
   const [questions, setQuestions] = useState<Questions[]>([]);
