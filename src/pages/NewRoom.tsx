@@ -6,11 +6,19 @@ import { Button } from '../components/Button';
 import { Link, useHistory } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth';
 import { database } from '../services/firebase';
+import { useEffect } from 'react';
+
 
 export function NewRoom() {
   const { user } = useAuth();
   const history = useHistory();
   const [newRoom, setNewRoom] = useState('');
+
+  useEffect(() => {
+    if (!user) {
+      history.push('/')
+    }
+  }, [user, history])
 
   async function handleCreateRoom(event: FormEvent) {
     event.preventDefault();

@@ -6,24 +6,17 @@ import { FormEvent, useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { database } from '../services/firebase';
 import imgLogo from '../assets/images/logo.svg'
+import { useParams } from 'react-router-dom';
 import '../styles/room.scss'
-import { useHistory, useParams } from 'react-router-dom';
-import { useEffect } from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 type RoomParams = {
   id: string;
 }
 
-type RoomClosed = {
-  endedAt: Date;
-}
-
-
-
 export function Room() {
-  const history = useHistory();
   const [newQuestion, setNewQuestion] = useState('');
-  const { user, signInWithGoogle } = useAuth();
+  const { user, signInWithGoogle, signOut } = useAuth();
   const params = useParams<RoomParams>();
   const roomId = params.id;
   const { questions, title } = useRoom(roomId)
@@ -55,11 +48,19 @@ export function Room() {
 
   async function handleLikeQuestion(questionId: string, likeId: string | undefined) {
     if (likeId) {
-      await database.ref(`rooms/${roomId}/questions/${questionId}/likes/${likeId}`).remove()
+      try {
+        await database.ref(`rooms/${roomId}/questions/${questionId}/likes/${likeId}`).remove()
+      } catch (e) {
+        alert('Você precisa estar logado para curtir!')
+      }
     } else {
-      await database.ref(`rooms/${roomId}/questions/${questionId}/likes`).push({
-        authorId: user?.id
-      });
+      try {
+        await database.ref(`rooms/${roomId}/questions/${questionId}/likes`).push({
+          authorId: user?.id
+        });
+      } catch (e) {
+        alert('Você precisa estar logado para curtir!')
+      }
     }
   }
 
@@ -74,7 +75,10 @@ export function Room() {
       <header>
         <div className="content">
           <img src={imgLogo} alt="Logo" />
-          <RoomCode code={roomId} />
+          <div>
+            <RoomCode code={roomId} />
+            {user && <Button isOutlined onClick={signOut}>Sair</Button>}
+          </div>
         </div>
       </header>
 

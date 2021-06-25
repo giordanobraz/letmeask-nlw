@@ -3,48 +3,66 @@ import { RoomCode } from '../components/RoomCode';
 import { Question } from '../components/Question';
 import { useHistory, useParams } from 'react-router-dom'
 import { useRoom } from '../hooks/useRoom';
-// import { useAuth } from '../hooks/useAuth';
 import imgLogo from '../assets/images/logo.svg'
 import deleteImg from '../assets/images/delete.svg'
 import checkImg from '../assets/images/check.svg';
-import answerImg from '../assets/images/answer.svg';
-
-import '../styles/room.scss'
 import { database } from '../services/firebase';
+import answerImg from '../assets/images/answer.svg';
+import emptyImg from '../assets/images/empty-questions.svg';
+import '../styles/room.scss'
+import { useAuth } from '../hooks/useAuth';
+
 type RoomParams = {
-  id: string
+  id: string;
 }
 
 export function AdminRoom() {
-  // const { user } = useAuth();
   const history = useHistory();
   const params = useParams<RoomParams>();
   const roomId = params.id;
-  const { questions, title } = useRoom(roomId)
+  const { title, questions } = useRoom(roomId);
+  const { user, signOut } = useAuth()
+
 
   async function handleDeleteQuestion(questionId: string) {
     if (window.confirm('Tem certeza que deseja remover a pergunta?')) {
-      await database.ref(`rooms/${roomId}/questions/${questionId}`).remove()
+      try {
+        await database.ref(`rooms/${roomId}/questions/${questionId}`).remove()
+      } catch (e) {
+        alert("Você não tem autorização para executar esta ação!");
+      }
     }
   }
 
   async function handleEndRoom() {
-    await database.ref(`rooms/${roomId}`).update({
-      endedAt: new Date()
-    })
-    history.push('/')
+    try {
+      await database.ref(`rooms/${roomId}`).update({
+        endedAt: new Date()
+      })
+      history.push('/')
+    } catch (e) {
+      alert("Você não tem autorização para executar esta ação!");
+    }
   }
 
   async function handleCheckQuestionAsAnswered(questionId: string) {
-    await database.ref(`rooms/${roomId}/questions/${questionId}`).update({
-      isAnswered: true,
-    })
+    try {
+      await database.ref(`rooms/${roomId}/questions/${questionId}`).update({
+        isAnswered: true,
+      })
+    } catch (e) {
+      alert("Você não tem autorização para executar esta ação!");
+    }
   }
 
   async function handleHighlightQuestion(questionId: string) {
-    await database.ref(`rooms/${roomId}/questions/${questionId}`).update({
-      isHighlighted: true,
-    })
+    try {
+      await database.ref(`rooms/${roomId}/questions/${questionId}`).update({
+        isHighlighted: true,
+      })
+    } catch (e) {
+      alert("Você não tem autorização para executar esta ação!");
+    }
   }
 
   return (
@@ -57,6 +75,7 @@ export function AdminRoom() {
           <div>
             <RoomCode code={roomId} />
             <Button isOutlined onClick={handleEndRoom}>Encerrar Sala</Button>
+            {user && <Button isOutlined onClick={signOut}>Sair</Button>}
           </div>
         </div>
       </header>
@@ -68,6 +87,14 @@ export function AdminRoom() {
         </div>
 
         <div className="question-list">
+          <div className="empty-question-list">
+            {questions.length === 0 && (
+              <div className="no-questions">
+                <img src={emptyImg} alt="Sem perguntas" />
+                <h1>Nenhuma pergunta ainda!</h1>
+              </div>
+            )}
+          </div>
           {questions.map(question => {
             return (
               <Question
