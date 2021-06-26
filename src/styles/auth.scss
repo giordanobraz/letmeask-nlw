@@ -5,15 +5,18 @@
 
   aside {
     flex: 7;
-    background: #835afd;
+    background: rgb(86, 61, 158);
+    background: radial-gradient(circle, rgba(86, 61, 158, 1) 0%, rgba(94, 58, 201, 1) 25%, rgba(131, 90, 253, 1) 100%);
     color: #fff;
     display: flex;
     flex-direction: column;
     justify-content: center;
     padding: 120px 80px;
+    text-align: center;
 
     img {
       max-width: 320px;
+      align-self: center;
     }
 
     strong {
@@ -21,6 +24,10 @@
       line-height: 42px;
       margin-top: 16px;
       color: #f8f8f8;
+    }
+
+    p {
+      font-size: 1.4rem;
     }
   }
   main {
@@ -38,6 +45,18 @@
     max-width: 320px;
     align-items: stretch;
     text-align: center;
+
+    .create-room-message {
+      h2 {
+        margin-bottom: 0;
+      }
+
+      h3 {
+        margin-bottom: 15px;
+        font-weight: 400;
+
+      }
+  }
 
     > img {
       align-self: center;

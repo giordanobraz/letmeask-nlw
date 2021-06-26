@@ -8,7 +8,6 @@ import { database } from '../services/firebase';
 import imgLogo from '../assets/images/logo.svg'
 import { useParams } from 'react-router-dom';
 import '../styles/room.scss'
-import 'bootstrap/dist/css/bootstrap.min.css';
 
 type RoomParams = {
   id: string;
